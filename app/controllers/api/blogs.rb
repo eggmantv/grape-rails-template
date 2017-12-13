@@ -1,7 +1,14 @@
 module API
   class Blogs < Grape::API
 
+    content_type :json, 'application/json'
+    # content_type :xml, 'application/xml'
+    content_type :txt, 'text/plain'
+    # content_type :binary, 'application/octet-stream'
+
     default_format :json
+
+    # version 'v1', using: :path
 
     helpers do
       def build_response code: 0, data: nil
@@ -13,8 +20,52 @@ module API
       end
     end
 
+    rescue_from ActiveRecord::RecordNotFound do |e|
+      error!({code: 1, error: 'not fould'}, 404)
+    end
+
+    rescue_from NoMethodError do |e|
+      error!({code: 1, error: 'system error'}, 422)
+    end
+    # rescue_from :all
+
+    # http_basic do |username, password|
+    #   username == 'test' and password == 'hello'
+    # end
+
+    # before do
+    #   unless request.headers['X-Api-Secret-Key'] == 'api_secret_key'
+    #     # error! :forbidden, 403
+    #     error!({code: 1, message: 'forbidden'}, 403)
+    #   end
+    # end
+
+    after do
+    end
+
+    before_validation do
+    end
+
+    after_validation do
+    end
+
+    version 'v1', using: :path do
+      get '/test/filter' do
+        raise NoMethodError
+      end
+    end
+
+    version 'v2', using: :path do
+      get '/test/filter' do
+        'test filter v2'
+      end
+    end
+
     # 别名: namespace, resource, group, segment
     resources :blogs do
+
+      before do
+      end
 
       # /blogs/3/comments
       route_param :id do
